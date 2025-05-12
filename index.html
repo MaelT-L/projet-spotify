@@ -1,15 +1,71 @@
 <!DOCTYPE html>
 <html lang="fr">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap CSS -->
-    <title>Mes statistiques Spotify</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap CSS -->
+    <title>Spoti'stats</title>
   </head>
   <body>
+    <div>
+      <h1>Musique de Maël</h1>
+      <p>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quod itaque
+        placeat expedita iste cupiditate quibusdam debitis illo nam ex, delectus
+        maxime perferendis dicta, recusandae aliquam blanditiis. Deleniti ut
+        quas cupiditate!
+      </p>
+    </div>
+    <div class="container">
+      <div id="graphs" class="row">
+        <!-- Graphique 1 -->
+        <div class="col-md-6">
+          <h5>Top 10 des Artistes</h5>
+          <canvas id="graph1"></canvas>
+        </div>
+        <!-- Graphique 2 -->
+        <div class="col-md-6">
+          <h5>Distribution des genres</h5>
+          <canvas id="graph2"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th>Titre</th>
+                  <th>Artiste</th>
+                  <th>Album</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody class="table-group-divider">
+                <tr>
+                  <td>Pomme</td>
+                  <td>1€</td>
+                  <td>gg</td>
+                  <td>df</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script> <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js -->
     <script src="script/script.js"></script>
   </body>
 </html>
