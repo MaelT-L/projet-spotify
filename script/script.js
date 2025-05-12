@@ -101,3 +101,26 @@ fetch('data/data.json')
     });
   })
   .catch(error => console.error('Erreur lors du chargement du JSON pour Graphique 2 :', error));
+
+// Ajout lignes tableau
+fetch('data/data.json')
+  .then(response => response.json())
+  .then(data => {
+    const tbody = document.querySelector('#tableau-musique tbody');
+
+    data.forEach(track => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${track.name}</td>
+        <td>${track.artists.map(artist => artist.name).join(', ')}</td>
+        <td>${track.album.name}</td>
+        <td><button type="button" class="btn btn-primary">
+          <i class="bi bi-info-circle me-1"></i> Détails
+        </button></td>
+      `;
+      tbody.appendChild(row);
+    });
+  })
+  .catch(error => {
+    console.error('Erreur lors du chargement des données :', error);
+  });
