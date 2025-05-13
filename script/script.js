@@ -1,52 +1,52 @@
 // Graphique 1 : Top 10 des artistes (nombre de morceaux)
 fetch('data/data.json')
-    .then(response => response.json())
-    .then(data => {
-        // Extraction des noms d'artistes
-        const artistCounts = {};
+  .then(response => response.json())
+  .then(data => {
+    // Extraction des noms d'artistes
+    const artistCounts = {};
 
-        data.forEach(track => {
-            track.artists.forEach(artist => {
-                const name = artist.name;
-                artistCounts[name] = (artistCounts[name] || 0) + 1;
-            });
-        });
+    data.forEach(track => {
+      track.artists.forEach(artist => {
+        const name = artist.name;
+        artistCounts[name] = (artistCounts[name] || 0) + 1;
+      });
+    });
 
-        // Conversion en tableau et tri pour garder le top 10
-        const sortedArtists = Object.entries(artistCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10);
+    // Conversion en tableau et tri pour garder le top 10
+    const sortedArtists = Object.entries(artistCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
 
-        const labels = sortedArtists.map(entry => entry[0]);
-        const values = sortedArtists.map(entry => entry[1]);
+    const labels = sortedArtists.map(entry => entry[0]);
+    const values = sortedArtists.map(entry => entry[1]);
 
-        // Initialisation du graphique
-        const ctx = document.getElementById('graph1').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: "Top 10 des artistes (nombre de morceaux)",
-                    data: values,
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        precision: 0
-                    }
-                }
-            }
-        });
-    })
-    .catch(error => console.error('Erreur lors du chargement du JSON :', error));
+    // Initialisation du graphique
+    const ctx = document.getElementById('graph1').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Top 10 des artistes (nombre de morceaux)",
+          data: values,
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            precision: 0
+          }
+        }
+      }
+    });
+  })
+  .catch(error => console.error('Erreur lors du chargement du JSON :', error));
 
 // Graphique 2 : Distribution des genres
 fetch('data/data.json')
@@ -77,26 +77,26 @@ fetch('data/data.json')
     new Chart(ctx, {
       type: 'pie',
       data: {
-      labels: labels,
-      datasets: [{
-        label: "Distribution des genres",
-        data: values,
-        backgroundColor: [
-        'rgba(255, 99, 132, 0.6)',
-        'rgba(54, 162, 235, 0.6)',
-        'rgba(255, 206, 86, 0.6)',
-        'rgba(75, 192, 192, 0.6)',
-        'rgba(153, 102, 255, 0.6)',
-        'rgba(255, 159, 64, 0.6)',
-        'rgba(89, 128, 205, 0.6)',
-        'rgba(128, 128, 128, 0.6)'
-        ],
-        borderColor: 'white',
-        borderWidth: 1
-      }]
+        labels: labels,
+        datasets: [{
+          label: "Distribution des genres",
+          data: values,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(89, 128, 205, 0.6)',
+            'rgba(128, 128, 128, 0.6)'
+          ],
+          borderColor: 'white',
+          borderWidth: 1
+        }]
       },
       options: {
-      responsive: true
+        responsive: true
       }
     });
   })
@@ -124,3 +124,59 @@ fetch('data/data.json')
   .catch(error => {
     console.error('Erreur lors du chargement des données :', error);
   });
+
+// 12 albums populaires
+function afficherAlbumsPopulaires() {
+  fetch('data/data.json')
+    .then(response => response.json())
+    .then(data => {
+      // Récupérer les albums uniques
+      const albums = data.map(track => track.album);
+      const uniqueAlbums = Array.from(new Set(albums.map(album => album.id)))
+        .map(id => albums.find(album => album.id === id));
+
+      // Trier les albums par popularité et prendre les 12 premiers
+      const sortedAlbums = uniqueAlbums.sort((a, b) => b.popularity - a.popularity).slice(0, 12);
+
+      // Sélectionner le conteneur
+      const container = document.getElementById('albums-populaires');
+      let row;
+
+      sortedAlbums.forEach((album, index) => {
+        // Créer une nouvelle ligne toutes les 6 cartes
+        if (index % 6 === 0) {
+          row = document.createElement('div');
+          row.className = 'row mb-4'; // Ajouter une marge entre les lignes
+          container.appendChild(row);
+        }
+
+        // Créer une carte pour chaque album
+        const card = document.createElement('div');
+        card.className = 'col-2'; // Chaque carte occupe 2 colonnes
+        card.innerHTML = `
+          <div class="card h-100">
+            <img src="${album.images[0]?.url || 'placeholder.jpg'}" class="card-img-top" alt="${album.name}">
+            <div class="card-body">
+              <h5 class="card-title">${album.name}</h5>
+              <p class="card-subtitle">${album.artists.map(artist => artist.name).join(', ')}</p>
+              <p class="card-text">${new Date(album.release_date).toLocaleDateString()}</p>
+              <div class="container">
+                <div class="row">
+                  <p class="card-text col-6">${album.total_tracks} titres</p>
+                  <p class="card-text col-6">${album.popularity}/100</p>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        `;
+        row.appendChild(card);
+      });
+    })
+    .catch(error => console.error('Erreur lors du chargement des albums populaires :', error));
+}
+
+
+
+// Appeler la fonction pour afficher les albums
+afficherAlbumsPopulaires();
