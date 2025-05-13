@@ -108,22 +108,105 @@ fetch('data/data.json')
   .then(data => {
     const tbody = document.querySelector('#tableau-musique tbody');
 
-    data.forEach(track => {
+    data.forEach((track, i) => {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${track.name}</td>
         <td>${track.artists.map(artist => artist.name).join(', ')}</td>
         <td>${track.album.name}</td>
-        <td><button type="button" class="btn btn-primary">
+        <td><button type="button" class="btn btn-primary btn-detail" data-index="${i}">
           <i class="bi bi-info-circle me-1"></i> Détails
         </button></td>
       `;
       tbody.appendChild(row);
     });
+
+    tbody.querySelectorAll('.btn-detail').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const track = data[this.getAttribute('data-index')];
+        showTrackModal(track);
+      });
+    });
   })
   .catch(error => {
     console.error('Erreur lors du chargement des données :', error);
   });
+
+// Modal détails des morceaux
+function showTrackModal(track) {
+  // Supprime un éventuel ancien modal
+  const oldModal = document.getElementById('modal-detail');
+  if (oldModal) oldModal.remove();
+
+  // Crée le HTML du modal
+  const modal = document.createElement('div');
+  modal.className = 'modal fade';
+  modal.id = 'modal-detail';
+  modal.tabIndex = -1;
+  modal.setAttribute('aria-labelledby', 'modalDetailLabel');
+  modal.setAttribute('aria-hidden', 'true');
+  modal.innerHTML = `
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalDetailLabel">Détails du morceau</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <img src="${track.album.images?.[0]?.url || 'placeholder.jpg'}" class="img-fluid rounded mb-2" alt="${track.album.name}">
+              <div><strong>${track.album.name}</strong> (${track.album.release_date || ''})<br>
+              <span class="badge bg-success">Popularité: ${track.popularity || track.album.popularity || 0}/100</span></div>
+            </div>
+            <div class="col-md-8">
+              <h5>${track.name} - ${track.artists.map(a => a.name).join(', ')}</h5>
+              <p>Preview audio</p>
+              <audio controls src="${track.preview_url || ''}" class="w-100 mb-2" ${track.preview_url ? '' : 'style="display:none"'}></audio>
+              <p>Informations sur le morceau</p>
+              <ul class="list-group mb-2">
+                <li class="list-group-item"><strong>Durée :</strong> ${msToMinSec(track.duration_ms)}</li>
+                <li class="list-group-item"><strong>Popularité :</strong> ${track.popularity || 0}/100</li>
+                <li class="list-group-item"><strong>Numéro de piste :</strong> ${track.track_number || ''}</li>
+                <li class="list-group-item"><strong>Explicit :</strong> ${track.explicit ? 'Oui' : 'Non'}</li>
+              </ul>
+              <p>Artiste(s)</p>
+              <div class="d-flex flex-wrap gap-3 mb-2">
+                ${track.artists.map(a => `
+                  <div class="text-center" style="min-width:100px;">
+                    <img src="${a.images?.[0]?.url || 'placeholder.jpg'}" alt="${a.name}" class="rounded-circle mb-1" style="width:64px;height:64px;object-fit:cover;">
+                    <div><strong>${a.name}</strong></div>
+                    <div>Popularité : ${a.popularity !== undefined ? a.popularity : 'N/A'}/100</div>
+                    <div>Followers : ${a.followers?.total !== undefined ? a.followers.total.toLocaleString() : 'N/A'}</div>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="mt-2">
+                <a href="${track.external_urls?.spotify || '#'}" target="_blank" class="btn btn-success">Ouvrir dans Spotify</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Affiche le modal
+  const bsModal = new bootstrap.Modal(modal);
+  bsModal.show();
+
+  // Nettoie le DOM après fermeture du modal
+  modal.addEventListener('hidden.bs.modal', () => modal.remove());
+}
+
+// Utilitaire pour convertir ms en min:sec
+function msToMinSec(ms) {
+  if (!ms) return '';
+  const min = Math.floor(ms / 60000);
+  const sec = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0');
+  return `${min}:${sec}`;
+}
 
 // 12 albums populaires
 function afficherAlbumsPopulaires() {
@@ -175,8 +258,5 @@ function afficherAlbumsPopulaires() {
     })
     .catch(error => console.error('Erreur lors du chargement des albums populaires :', error));
 }
-
-
-
 // Appeler la fonction pour afficher les albums
 afficherAlbumsPopulaires();
