@@ -8,18 +8,18 @@
 
 #graphs {
     margin-bottom: 40px;
+    /* display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 24px;
+    width: 100%; */
 }
 
 
-.graph1 {
-    border:#898989 1px solid;
-}
 
-.graph2 {
-    border:#898989 1px solid;
-}
 
 canvas {
-  height: 300px !important;
-  width: auto !important;
+    height: 300px !important;
+    width: auto !important;
 }

@@ -159,34 +159,74 @@ function showTrackModal(track) {
         </div>
         <div class="modal-body">
           <div class="row">
-            <div class="col-md-4 text-center">
+            <!-- Colonne gauche modal -->
+            <div class="col-md-4">
               <img src="${track.album.images?.[0]?.url || 'placeholder.jpg'}" class="img-fluid rounded mb-2" alt="${track.album.name}">
-              <div><strong>${track.album.name}</strong> (${track.album.release_date || ''})<br>
+              <div><strong>${track.album.name}</strong><br>
+              ${track.album.release_date || ''} · ${track.album.total_tracks || 'N/A'} titre(s)<br>
               <span class="badge bg-success">Popularité: ${track.popularity || track.album.popularity || 0}/100</span></div>
             </div>
             <div class="col-md-8">
+              <!-- Nom du Titre -->
               <h5>${track.name} - ${track.artists.map(a => a.name).join(', ')}</h5>
+              <!-- Preview -->
               <p>Preview audio</p>
               <audio controls src="${track.preview_url || ''}" class="w-100 mb-2" ${track.preview_url ? '' : 'style="display:none"'}></audio>
+              <!-- Sections infos du Titre -->
               <p>Informations sur le morceau</p>
-              <ul class="list-group mb-2">
-                <li class="list-group-item"><strong>Durée :</strong> ${msToMinSec(track.duration_ms)}</li>
-                <li class="list-group-item"><strong>Popularité :</strong> ${track.popularity || 0}/100</li>
-                <li class="list-group-item"><strong>Numéro de piste :</strong> ${track.track_number || ''}</li>
-                <li class="list-group-item"><strong>Explicit :</strong> ${track.explicit ? 'Oui' : 'Non'}</li>
-              </ul>
+              <table class="table table-sm mb-2">
+                <tbody>
+                  <tr>
+                    <td>Durée :</td>
+                    <td class="text-end">${msToMinSec(track.duration_ms)}</td>
+                  </tr>
+                  <tr>
+                    <td>Numéro de piste :</td>
+                    <td class="text-end">${track.track_number || ''}</td>
+                  </tr>
+                  <tr>
+                    <td>Popularité :</td>
+                    <td class="text-end">
+                      <div class="d-flex align-items-center justify-content-end gap-2">
+                        <div class="progress flex-grow-1" style="height: 16px; max-width: 120px;" role="progressbar" aria-label="Popularité" aria-valuenow="${track.popularity}" aria-valuemin="0" aria-valuemax="100">
+                          <div class="progress-bar" style="width: ${track.popularity || 0}%"></div>
+                        </div>
+                        <span>${track.popularity || 0}/100</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Explicit :</td>
+                    <td class="text-end">${track.explicit ? 'Oui' : 'Non'}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- Section Artistes -->
               <p>Artiste(s)</p>
               <div class="d-flex flex-wrap gap-3 mb-2">
                 ${track.artists.map(a => `
                   <div class="text-center" style="min-width:100px;">
                     <img src="${a.images?.[0]?.url || 'placeholder.jpg'}" alt="${a.name}" class="rounded-circle mb-1" style="width:64px;height:64px;object-fit:cover;">
                     <div><strong>${a.name}</strong></div>
-                    <div>Popularité : ${a.popularity !== undefined ? a.popularity : 'N/A'}/100</div>
-                    <div>Followers : ${a.followers?.total !== undefined ? a.followers.total.toLocaleString() : 'N/A'}</div>
+                    <div class="text-muted">Popularité : ${a.popularity !== undefined ? a.popularity : 'N/A'}/100</div>
+                    <div class="text-muted">Followers : ${a.followers?.total !== undefined ? a.followers.total.toLocaleString() : 'N/A'}</div>
                   </div>
                 `).join('')}
               </div>
-              <div class="mt-2">
+              <!-- Section Genres -->
+              <div class="mb-2">
+                <p>Genre(s)</p>
+                <div class="d-flex flex-wrap gap-2 mt-1">
+                  ${
+                    track.artists
+                      .flatMap(a => Array.isArray(a.genres) ? a.genres : [])
+                      .filter((genre, i, arr) => arr.indexOf(genre) === i)
+                      .map(genre => `<span class="badge bg-secondary">${genre}</span>`)
+                      .join('') || '<span class="text-muted">Aucun genre</span>'
+                  }
+                </div>
+              </div>
+              <div class="mt-2 text-end">
                 <a href="${track.external_urls?.spotify || '#'}" target="_blank" class="btn btn-success">Ouvrir dans Spotify</a>
               </div>
             </div>
