@@ -77,31 +77,32 @@ fetch('data/data.json')
     new Chart(ctx, {
       type: 'pie',
       data: {
-      labels: labels,
-      datasets: [{
-        label: "Distribution des genres",
-        data: values,
-        backgroundColor: [
-        'rgba(255, 99, 132, 0.6)',
-        'rgba(54, 162, 235, 0.6)',
-        'rgba(255, 206, 86, 0.6)',
-        'rgba(75, 192, 192, 0.6)',
-        'rgba(153, 102, 255, 0.6)',
-        'rgba(255, 159, 64, 0.6)',
-        'rgba(89, 128, 205, 0.6)',
-        'rgba(128, 128, 128, 0.6)'
-        ],
-        borderColor: 'white',
-        borderWidth: 1
-      }]
+        labels: labels,
+        datasets: [{
+          label: "Distribution des genres",
+          data: values,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(89, 128, 205, 0.6)',
+            'rgba(128, 128, 128, 0.6)'
+          ],
+          borderColor: 'white',
+          borderWidth: 1
+        }]
       },
       options: {
-      responsive: true,
-      plugins: {
-        legend: {
-        position: 'right'
+        responsive: true,
+        aspectRatio: 1,
+        plugins: {
+          legend: {
+            position: 'right'
+          }
         }
-      }
       }
     });
   })
@@ -113,13 +114,14 @@ fetch('data/data.json')
   .then(data => {
     const tbody = document.querySelector('#tableau-musique tbody');
 
+    // Pour chaque morceau => ça crée une ligne dans le tablea uet ca ajoute toutes les bonnes cellules
     data.forEach((track, i) => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${track.name}</td>
-        <td>${track.artists.map(artist => artist.name).join(', ')}</td>
-        <td>${track.album.name}</td>
-        <td><button type="button" class="btn btn-primary btn-detail" data-index="${i}">
+        <td data-label="Titre">${track.name}</td>
+        <td data-label="Artiste">${track.artists.map(artist => artist.name).join(', ')}</td>
+        <td data-label="Album">${track.album.name}</td>
+        <td data-label="Action"><button type="button" class="btn btn-primary btn-detail" data-index="${i}">
           <i class="bi bi-info-circle me-1"></i> Détails
         </button></td>
       `;
@@ -127,7 +129,7 @@ fetch('data/data.json')
     });
 
     tbody.querySelectorAll('.btn-detail').forEach(btn => {
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', function () {
         const track = data[this.getAttribute('data-index')];
         showTrackModal(track);
       });
@@ -139,7 +141,7 @@ fetch('data/data.json')
 
 // Modal détails des morceaux
 function showTrackModal(track) {
-  // Supprime un éventuel ancien modal
+  // Supprime un modal si il existait déja
   const oldModal = document.getElementById('modal-detail');
   if (oldModal) oldModal.remove();
 
@@ -217,13 +219,12 @@ function showTrackModal(track) {
               <div class="mb-2">
                 <p>Genre(s)</p>
                 <div class="d-flex flex-wrap gap-2 mt-1">
-                  ${
-                    track.artists
-                      .flatMap(a => Array.isArray(a.genres) ? a.genres : [])
-                      .filter((genre, i, arr) => arr.indexOf(genre) === i)
-                      .map(genre => `<span class="badge bg-secondary">${genre}</span>`)
-                      .join('') || '<span class="text-muted">Aucun genre</span>'
-                  }
+                  ${track.artists
+      .flatMap(a => Array.isArray(a.genres) ? a.genres : [])
+      .filter((genre, i, arr) => arr.indexOf(genre) === i)
+      .map(genre => `<span class="badge bg-secondary">${genre}</span>`)
+      .join('') || '<span class="text-muted">Aucun genre</span>'
+    }
                 </div>
               </div>
               <div class="mt-2 text-end">
@@ -245,7 +246,7 @@ function showTrackModal(track) {
   modal.addEventListener('hidden.bs.modal', () => modal.remove());
 }
 
-// Utilitaire pour convertir ms en min:sec
+// Convertir les ms en min:sec
 function msToMinSec(ms) {
   if (!ms) return '';
   const min = Math.floor(ms / 60000);
@@ -258,12 +259,12 @@ function afficherAlbumsPopulaires() {
   fetch('data/data.json')
     .then(response => response.json())
     .then(data => {
-      // Récupérer les albums uniques
+      // Récupère les albums uniques
       const albums = data.map(track => track.album);
       const uniqueAlbums = Array.from(new Set(albums.map(album => album.id)))
         .map(id => albums.find(album => album.id === id));
 
-      // Trier les albums par popularité et prendre les 12 premiers
+      // Trier les 12 albums les plus populaires
       const sortedAlbums = uniqueAlbums.sort((a, b) => b.popularity - a.popularity).slice(0, 12);
 
       // Sélectionner le conteneur
@@ -274,7 +275,7 @@ function afficherAlbumsPopulaires() {
         // Créer une nouvelle ligne toutes les 6 cartes
         if (index % 6 === 0) {
           row = document.createElement('div');
-          row.className = 'row mb-4'; // Ajouter une marge entre les lignes
+          row.className = 'row mb-4';
           container.appendChild(row);
         }
 
@@ -303,5 +304,5 @@ function afficherAlbumsPopulaires() {
     })
     .catch(error => console.error('Erreur lors du chargement des albums populaires :', error));
 }
-// Appeler la fonction pour afficher les albums
+// Appele la fonction pour afficher les albums
 afficherAlbumsPopulaires();

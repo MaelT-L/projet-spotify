@@ -7,19 +7,100 @@
 }
 
 #graphs {
-    margin-bottom: 40px;
-    /* display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 24px;
-    margin-top: 24px;
-    width: 100%; */
+    margin-bottom: 32px;
 }
 
+.graph {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 
+.graph1-title,
+.graph2-title {
+    color: white;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    width: 100%;
+    background-clip: padding-box;
+    display: block;
+    box-sizing: border-box;
+}
 
+.graph1-title {
+    background-color: #0D6EFD;
+}
+
+.graph2-title {
+    background-color: #198754;
+}
 
 canvas {
     height: 300px !important;
-    width: auto !important;
+    display: block;
+    margin: 0 auto;
+}
+
+#graph2 {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+/* Responsive*/
+
+@media (max-width: 767.98px) {
+  
+  /* Responsive pour le tableau */
+  #tableau-musique thead {
+    display: none;
+  }
+  #tableau-musique,
+  #tableau-musique tbody,
+  #tableau-musique tr,
+  #tableau-musique td {
+    display: block;
+    width: 100%;
+  }
+  #tableau-musique td {
+    text-align: left;
+    padding-left: 50%;
+    position: relative;
+    border: none;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  #tableau-musique td::before {
+    content: attr(data-label) " : ";
+    position: absolute;
+    left: 16px;
+    top: 0;
+    width: 45%;
+    white-space: nowrap;
+    font-weight: bold;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  /* Responsive pour les albums populaires */
+  #albums-populaires .row {
+    display: block;
+  }
+  #albums-populaires .row > div {
+    width: 100% !important;
+    max-width: 100%;
+    display: block;
+    margin-bottom: 1rem;
+  }
+  #albums-populaires .card {
+    width: 90%;
+    margin: 0 auto 1rem auto;
+  }
 }
